@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heaven Dine — Palakkad</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,900;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:    #f5f0e8;
+      --warm:     #e8dcc8;
+      --gold:     #c9a84c;
+      --gold-lt:  #e2c47a;
+      --amber:    #a0622a;
+      --dark:     #1a1208;
+      --charcoal: #2d2416;
+      --text:     #3a2e1e;
+      --muted:    #7a6a52;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── CURSOR ─── */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.08s ease, width 0.25s ease, height 0.25s ease, opacity 0.25s ease;
+      mix-blend-mode: multiply;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--gold);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.2s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+      opacity: 0.6;
+    }
+
+    /* ─── LOADER ─── */
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--dark);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 10000;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+    .loader-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      overflow: hidden;
+    }
+    .loader-text span {
+      display: inline-block;
+      animation: riseIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .loader-line {
+      width: 0; height: 1px;
+      background: var(--gold);
+      margin-top: 1.5rem;
+      animation: expandLine 1.6s ease forwards 0.6s;
+    }
+    .loader-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem;
+      color: var(--gold-lt);
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      margin-top: 1rem;
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards 1.4s;
+    }
+    @keyframes riseIn  { from { transform: translateY(100%); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes expandLine { to { width: 200px; } }
+    @keyframes fadeIn  { to { opacity: 1; } }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem 4rem;
+      transition: background 0.4s ease, backdrop-filter 0.4s ease, padding 0.4s ease;
+    }
+    nav.scrolled {
+      background: rgba(26, 18, 8, 0.94);
+      backdrop-filter: blur(12px);
+      padding: 1rem 4rem;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+    .nav-logo span { font-style: italic; font-weight: 400; color: var(--gold-lt); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--warm);
+      text-decoration: none;
+      position: relative;
+      transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--gold);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-btn {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.6rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .nav-btn:hover { background: var(--gold); color: var(--dark); }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      height: 100vh; min-height: 700px;
+      display: flex; align-items: center;
+      overflow: hidden;
+      background: var(--dark);
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: 
+        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(201, 168, 76, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, rgba(160, 98, 42, 0.15) 0%, transparent 60%),
+        linear-gradient(160deg, #1a1208 0%, #0e0a04 50%, #1a1208 100%);
+    }
+    /* Decorative grid lines */
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image: 
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+    }
+    /* Large decorative circle */
+    .hero-circle {
+      position: absolute;
+      width: 600px; height: 600px;
+      border: 1px solid rgba(201,168,76,0.1);
+      border-radius: 50%;
+      right: -100px; top: 50%;
+      transform: translateY(-50%);
+      animation: rotateSlow 30s linear infinite;
+    }
+    .hero-circle::before {
+      content: '';
+      position: absolute; inset: 40px;
+      border: 1px solid rgba(201,168,76,0.06);
+      border-radius: 50%;
+    }
+    @keyframes rotateSlow { to { transform: translateY(-50%) rotate(360deg); } }
+
+    /* Food image mosaic */
+    .hero-mosaic {
+      position: absolute;
+      right: 4%;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      grid-template-columns: 190px 155px;
+      grid-template-rows: 190px 190px;
+      gap: 10px;
+      opacity: 0;
+      animation: mosaicReveal 1s ease 2.2s forwards;
+      z-index: 2;
+    }
+    @keyframes mosaicReveal { to { opacity: 1; } }
+    .mosaic-img {
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+      background: var(--charcoal);
+    }
+    .mosaic-img:nth-child(1) { grid-column: 1; grid-row: 1; }
+    .mosaic-img:nth-child(2) { grid-column: 2; grid-row: 1 / 3; }
+    .mosaic-img:nth-child(3) { grid-column: 1; grid-row: 2; }
+    .mosaic-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: sepia(15%) brightness(0.88);
+      transition: filter 0.5s ease, transform 0.5s ease;
+    }
+    .mosaic-img:hover img { filter: sepia(0%) brightness(1.05); transform: scale(1.05); }
+    .mosaic-img::after {
+      content: ''; position: absolute; inset: 0;
+      border: 1px solid rgba(201,168,76,0.3);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 120px 5rem 4rem;
+      max-width: 620px;
+      flex-shrink: 0;
+    }
+    .hero-tag {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      opacity: 0; animation: fadeSlideUp 0.8s ease 2s forwards;
+    }
+    .hero-tag::before {
+      content: ''; display: block;
+      width: 40px; height: 1px; background: var(--gold);
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 5.5vw, 5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      color: var(--cream);
+      margin-bottom: 1.2rem;
+      opacity: 0; animation: fadeSlideUp 0.9s ease 2.1s forwards;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+      display: block;
+    }
+    .hero-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 300;
+      color: rgba(232,220,200,0.75);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      max-width: 440px;
+      opacity: 0; animation: fadeSlideUp 0.9s ease 2.25s forwards;
+    }
+    .hero-actions {
+      display: flex; gap: 1.5rem; align-items: center;
+      opacity: 0; animation: fadeSlideUp 0.9s ease 2.4s forwards;
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: var(--dark);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none; cursor: pointer;
+      padding: 1rem 2.5rem;
+      transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--amber);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .btn-primary:hover::before { transform: translateX(0); }
+    .btn-primary span { position: relative; z-index: 1; }
+    .btn-ghost {
+      background: transparent; border: none; cursor: pointer;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--gold-lt);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      transition: color 0.3s;
+    }
+    .btn-ghost:hover { color: var(--gold); }
+
+    /* Rating badge */
+    .hero-rating {
+      position: absolute; right: 4%; bottom: 4%;
+      background: rgba(26,18,8,0.92);
+      border: 1px solid rgba(201,168,76,0.35);
+      backdrop-filter: blur(10px);
+      padding: 1rem 1.4rem;
+      display: flex; align-items: center; gap: 1rem;
+      opacity: 0; animation: fadeIn 0.8s ease 2.6s forwards;
+      z-index: 3;
+    }
+    .rating-stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 2px; }
+    .rating-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .rating-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* ─── SCROLL INDICATOR ─── */
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+      opacity: 0; animation: fadeIn 1s ease 3s forwards;
+      z-index: 3;
+    }
+    .scroll-line {
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(0.6); opacity: 0.4; }
+    }
+
+    /* ─── SECTION SHARED ─── */
+    section { padding: 7rem 5rem; }
+    .section-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--gold);
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .section-label::before {
+      content: ''; display: block;
+      width: 30px; height: 1px; background: var(--gold);
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 4vw, 3.5rem);
+      font-weight: 900; line-height: 1.1;
+      color: var(--charcoal);
+      margin-bottom: 1.5rem;
+    }
+    .section-title em { font-style: italic; color: var(--amber); }
+
+    /* ─── ABOUT ─── */
+    #about {
+      background: var(--cream);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-visual {
+      position: relative;
+    }
+    .about-img-main {
+      width: 100%; aspect-ratio: 4/5;
+      background: linear-gradient(135deg, #2d1a0a, #1a0f05);
+      overflow: hidden;
+      position: relative;
+    }
+    .about-img-main img { width: 100%; height: 100%; object-fit: cover; }
+    .about-img-accent {
+      position: absolute;
+      width: 55%; bottom: -2rem; right: -2rem;
+      aspect-ratio: 4/3;
+      background: var(--warm);
+      overflow: hidden;
+      border: 6px solid var(--cream);
+    }
+    .about-img-accent img { width: 100%; height: 100%; object-fit: cover; }
+    .about-years {
+      position: absolute;
+      top: 1.5rem; left: -1.5rem;
+      background: var(--gold);
+      color: var(--dark);
+      padding: 1.2rem 1.4rem;
+      text-align: center;
+    }
+    .about-years strong {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem; font-weight: 900; line-height: 1;
+    }
+    .about-years span {
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    }
+    .about-text p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem; font-weight: 300;
+      color: var(--muted);
+      line-height: 1.85;
+      margin-bottom: 1.2rem;
+    }
+    .about-stats {
+      display: flex; gap: 2.5rem;
+      margin-top: 2.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid rgba(201,168,76,0.2);
+    }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem; font-weight: 900;
+      color: var(--amber); line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); margin-top: 0.3rem;
+    }
+
+    /* ─── CUISINE STRIP ─── */
+    .cuisine-strip {
+      background: var(--dark);
+      padding: 2rem 0;
+      overflow: hidden;
+    }
+    .strip-track {
+      display: flex; gap: 4rem;
+      animation: stripScroll 20s linear infinite;
+      white-space: nowrap;
+    }
+    .strip-item {
+      display: flex; align-items: center; gap: 1.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; font-style: italic;
+      color: rgba(201,168,76,0.5);
+      flex-shrink: 0;
+    }
+    .strip-dot { width: 5px; height: 5px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+    @keyframes stripScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ─── MENU ─── */
+    #menu { background: #f8f3ea; }
+    .menu-tabs {
+      display: flex; gap: 0;
+      margin: 3rem 0 2.5rem;
+      border-bottom: 1px solid rgba(201,168,76,0.25);
+    }
+    .menu-tab {
+      background: none; border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.8rem 1.8rem;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.3s;
+    }
+    .menu-tab.active { color: var(--amber); border-bottom-color: var(--amber); }
+    .menu-tab:hover:not(.active) { color: var(--text); }
+    .menu-panel { display: none; }
+    .menu-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .menu-item {
+      padding: 1.8rem 0;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 1rem; align-items: start;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .menu-item:nth-child(odd) { padding-right: 3rem; }
+    .menu-item:nth-child(even) { padding-left: 3rem; }
+    .menu-item:nth-child(even)::before {
+      content: ''; position: absolute;
+      left: 0; top: 20%; bottom: 20%;
+      width: 1px; background: rgba(201,168,76,0.15);
+    }
+    .item-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.15rem; font-weight: 600;
+      color: var(--charcoal);
+    }
+    .item-desc {
+      font-size: 0.8rem; color: var(--muted);
+      margin-top: 0.3rem; line-height: 1.5;
+    }
+    .item-price {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem; color: var(--amber);
+      white-space: nowrap;
+    }
+    .item-tag {
+      display: inline-block;
+      font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
+      background: var(--gold);
+      color: var(--dark);
+      padding: 0.2rem 0.5rem;
+      margin-left: 0.6rem;
+      vertical-align: middle;
+    }
+
+    /* ─── AMBIENCE / GALLERY ─── */
+    #gallery {
+      background: var(--dark);
+      padding: 7rem 0;
+    }
+    #gallery .inner { padding: 0 5rem; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 280px 280px;
+      gap: 12px;
+      margin-top: 3rem;
+    }
+    .gallery-cell {
+      overflow: hidden; position: relative;
+      background: var(--charcoal);
+    }
+    .gallery-cell:first-child { grid-row: 1 / 3; }
+    .gallery-cell img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: brightness(0.8) saturate(0.9);
+      transition: filter 0.5s ease, transform 0.6s ease;
+    }
+    .gallery-cell:hover img { filter: brightness(1) saturate(1.1); transform: scale(1.05); }
+    .gallery-cell::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,18,8,0.6), transparent 50%);
+      pointer-events: none;
+    }
+    #gallery .section-title { color: var(--cream); }
+    #gallery .section-label { /* keep gold */ }
+
+    /* ─── INFO BAND ─── */
+    #info {
+      background: var(--dark);
+      padding: 5rem;
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr 1px 1fr;
+      gap: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    #info::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(201,168,76,0.07), transparent);
+      pointer-events: none;
+    }
+    .info-card {
+      text-align: center;
+      padding: 2rem 3rem;
+      position: relative;
+    }
+    .info-icon-wrap {
+      width: 64px; height: 64px;
+      border: 1.5px solid rgba(201,168,76,0.4);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.4rem;
+      background: rgba(201,168,76,0.06);
+      transition: background 0.4s, border-color 0.4s, transform 0.4s;
+    }
+    .info-card:hover .info-icon-wrap {
+      background: rgba(201,168,76,0.15);
+      border-color: var(--gold);
+      transform: scale(1.08) rotate(5deg);
+    }
+    .info-icon-wrap svg {
+      width: 26px; height: 26px;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .info-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.02em;
+    }
+    .info-body {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem; font-weight: 300;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .info-body a { color: var(--gold-lt); text-decoration: none; transition: color 0.3s; }
+    .info-body a:hover { color: var(--gold); }
+    .info-divider {
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.25) 30%, rgba(201,168,76,0.25) 70%, transparent);
+      align-self: stretch;
+      margin: 2rem 0;
+    }
+
+    /* ─── REVIEWS ─── */
+    #reviews { background: var(--cream); }
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .review-card {
+      background: #fff;
+      padding: 2.5rem;
+      border-left: 3px solid var(--gold);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .review-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+    .review-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem; font-style: italic;
+      color: var(--gold-lt);
+      line-height: 0.7;
+      margin-bottom: 1rem;
+    }
+    .review-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem; font-weight: 300;
+      color: var(--text); line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+    .review-author {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .review-stars { color: var(--gold); font-size: 0.75rem; margin-bottom: 0.5rem; }
+
+    /* ─── CTA ─── */
+    #cta {
+      background: var(--charcoal);
+      padding: 8rem 5rem;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(201,168,76,0.08), transparent);
+    }
+    #cta .section-title { color: var(--cream); margin-bottom: 1.5rem; }
+    .cta-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem; font-style: italic;
+      color: rgba(232,220,200,0.6);
+      margin-bottom: 3rem;
+    }
+    .cta-actions { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+    .btn-gold-outline {
+      border: 1px solid var(--gold); background: transparent;
+      color: var(--gold);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 1rem 2.5rem; cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-gold-outline:hover { background: var(--gold); color: var(--dark); }
+
+    /* ─── MAP SECTION ─── */
+    #location { background: var(--cream); padding: 0; }
+    .location-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    .location-info {
+      padding: 6rem 5rem;
+      background: var(--warm);
+    }
+    .location-info .section-title { font-size: 2rem; }
+    .location-detail {
+      display: flex; gap: 1rem; align-items: flex-start;
+      margin-top: 2rem;
+    }
+    .location-detail-icon {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      margin-top: 2px;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .location-detail:hover .location-detail-icon {
+      background: rgba(201,168,76,0.22);
+      transform: scale(1.1);
+    }
+    .location-detail-text { font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; color: var(--muted); line-height: 1.6; }
+    .location-detail-text strong { display: block; color: var(--charcoal); font-weight: 600; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.3rem; font-family: 'DM Sans', sans-serif; }
+    .location-cta { margin-top: 2.5rem; }
+    .location-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      background: var(--amber);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.9rem 2rem;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .location-btn:hover { background: var(--gold); transform: translateX(4px); }
+    .map-embed { width: 100%; height: 100%; min-height: 500px; }
+    .map-embed iframe { width: 100%; height: 100%; min-height: 500px; border: none; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--dark);
+      padding: 4rem 5rem 2.5rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+    }
+    .footer-brand .nav-logo { font-size: 1.8rem; display: block; margin-bottom: 1rem; }
+    .footer-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem; font-style: italic;
+      color: var(--muted); line-height: 1.6;
+    }
+    .footer-col-title {
+      font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.2rem;
+    }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 0.7rem; }
+    .footer-links a {
+      text-decoration: none;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      color: var(--muted);
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom {
+      background: var(--dark);
+      padding: 1.5rem 5rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-bottom p { font-size: 0.75rem; color: rgba(122,106,82,0.5); }
+    .social-links { display: flex; gap: 1rem; }
+    .social-link {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(201,168,76,0.25);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); text-decoration: none; font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .social-link:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+
+    /* ─── REVEAL ANIMATION ─── */
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: 0.15s; }
+    .reveal-delay-2 { transition-delay: 0.3s; }
+    .reveal-delay-3 { transition-delay: 0.45s; }
+
+    /* Icon float animation */
+    @keyframes floatIcon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .info-card.visible .info-icon-wrap {
+      animation: floatIcon 3s ease-in-out infinite;
+    }
+    .info-card.reveal-delay-1.visible .info-icon-wrap { animation-delay: 0.4s; }
+    .info-card.reveal-delay-2.visible .info-icon-wrap { animation-delay: 0.8s; }
+
+    /* Gold shimmer on section labels */
+    @keyframes shimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position:  200% center; }
+    }
+    .section-label {
+      background: linear-gradient(90deg, var(--gold) 25%, var(--gold-lt) 50%, var(--gold) 75%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1100px) {
+      .hero-mosaic { right: 2%; }
+      .hero-content { max-width: 500px; padding: 120px 3rem 4rem; }
+    }
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 2rem; }
+      nav.scrolled { padding: 0.8rem 2rem; }
+      .nav-links { display: none; }
+      section { padding: 5rem 2rem; }
+      #about { grid-template-columns: 1fr; gap: 3rem; }
+      .about-years { left: 0.5rem; }
+      .menu-panel.active { grid-template-columns: 1fr; }
+      .menu-item:nth-child(even) { padding-left: 0; }
+      .menu-item:nth-child(even)::before { display: none; }
+      .menu-item:nth-child(odd) { padding-right: 0; }
+      #info { grid-template-columns: 1fr; padding: 3rem 2rem; }
+      #info .info-divider { width: 60%; height: 1px; margin: 0 auto; background: rgba(201,168,76,0.15); }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .gallery-cell:first-child { grid-row: auto; grid-column: 1 / 3; }
+      footer { grid-template-columns: 1fr 1fr; padding: 3rem 2rem 1.5rem; }
+      .footer-brand { grid-column: 1 / 3; }
+      .location-inner { grid-template-columns: 1fr; }
+      .hero-mosaic { display: none; }
+      .hero-content { padding: 100px 2rem 4rem; max-width: 100%; }
+      #cta { padding: 5rem 2rem; }
+      .hero-rating { right: 1.5rem; bottom: 1.5rem; }
+      .scroll-hint { left: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Loader -->
+<div id="loader">
+  <div class="loader-text">
+    <span style="animation-delay:0.05s">H</span><span style="animation-delay:0.1s">e</span><span style="animation-delay:0.15s">a</span><span style="animation-delay:0.2s">v</span><span style="animation-delay:0.25s">e</span><span style="animation-delay:0.3s">n</span>&nbsp;<span style="animation-delay:0.4s">D</span><span style="animation-delay:0.45s">i</span><span style="animation-delay:0.5s">n</span><span style="animation-delay:0.55s">e</span>
+  </div>
+  <div class="loader-line"></div>
+  <div class="loader-sub">Palakkad · Kerala</div>
+</div>
+
+<!-- Navigation -->
+<nav id="mainNav">
+  <a href="#" class="nav-logo">Heaven <span>Dine</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#location">Location</a></li>
+  </ul>
+  <button class="nav-btn" onclick="document.getElementById('location').scrollIntoView({behavior:'smooth'})">Reserve</button>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-circle"></div>
+
+  <!-- Image Mosaic -->
+  <div class="hero-mosaic">
+    <div class="mosaic-img">
+      <img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400&h=400&fit=crop&q=80" alt="Biryani dish" />
+    </div>
+    <div class="mosaic-img">
+      <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=320&h=400&fit=crop&q=80" alt="Arabic food platter" />
+    </div>
+    <div class="mosaic-img">
+      <img src="https://images.unsplash.com/photo-1574653853027-5382a3d23a15?w=400&h=400&fit=crop&q=80" alt="Kebab and curry" />
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-tag">Fine Dining · Palakkad</div>
+    <h1 class="hero-title">
+      Where Every Meal
+      <em>Feels Divine</em>
+    </h1>
+    <p class="hero-desc">
+      North Indian &amp; Arabic cuisine crafted with passion, served with warmth — right on Calicut Bypass Road, Palakkad.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
+        <span>Explore Menu</span>
+      </button>
+      <button class="btn-ghost" onclick="document.getElementById('location').scrollIntoView({behavior:'smooth'})">Get Directions</button>
+    </div>
+  </div>
+
+  <div class="hero-rating">
+    <div>
+      <div class="rating-stars">★★★★★</div>
+      <div class="rating-label">Customer Rating</div>
+    </div>
+    <div class="rating-num">4.1</div>
+    <div>
+      <div class="rating-label">346+</div>
+      <div class="rating-label">Reviews</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- Cuisine Strip -->
+<div class="cuisine-strip">
+  <div class="strip-track" id="stripTrack">
+    <div class="strip-item"><div class="strip-dot"></div> Biryani </div>
+    <div class="strip-item"><div class="strip-dot"></div> Arabic Cuisine </div>
+    <div class="strip-item"><div class="strip-dot"></div> North Indian </div>
+    <div class="strip-item"><div class="strip-dot"></div> Kebabs &amp; Grills </div>
+    <div class="strip-item"><div class="strip-dot"></div> Malabar Specials </div>
+    <div class="strip-item"><div class="strip-dot"></div> Shakes &amp; Drinks </div>
+    <div class="strip-item"><div class="strip-dot"></div> Family Dining </div>
+    <div class="strip-item"><div class="strip-dot"></div> Biryani </div>
+    <div class="strip-item"><div class="strip-dot"></div> Arabic Cuisine </div>
+    <div class="strip-item"><div class="strip-dot"></div> North Indian </div>
+    <div class="strip-item"><div class="strip-dot"></div> Kebabs &amp; Grills </div>
+    <div class="strip-item"><div class="strip-dot"></div> Malabar Specials </div>
+    <div class="strip-item"><div class="strip-dot"></div> Shakes &amp; Drinks </div>
+    <div class="strip-item"><div class="strip-dot"></div> Family Dining </div>
+  </div>
+</div>
+
+<!-- About -->
+<section id="about">
+  <div class="about-visual">
+    <div class="about-years reveal">
+      <strong>#36</strong>
+      <span>in Palakkad</span>
+    </div>
+    <div class="about-img-main reveal">
+      <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?w=700&q=80" alt="Heaven Dine Ambience" />
+    </div>
+    <div class="about-img-accent reveal reveal-delay-2">
+      <img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400&q=80" alt="Food at Heaven Dine" />
+    </div>
+  </div>
+  <div class="about-text">
+    <div class="section-label reveal">Our Story</div>
+    <h2 class="section-title reveal reveal-delay-1">A <em>Heavenly</em> Experience in Every Bite</h2>
+    <div class="reveal reveal-delay-2">
+      <p>Heaven Dine is Palakkad's beloved destination for North Indian and Arabic cuisine, where the aroma of freshly prepared biryani drifts through a warm and welcoming dining room.</p>
+      <p>Nestled on Calicut Bypass Road near Trinity Eye Hospital, we've become a word-of-mouth favourite — bustling during lunch, vibrant in the evenings, and always alive with the joy of great food shared among family and friends.</p>
+      <p>From slow-cooked biryanis to golden kebabs and rich curries, every dish is a tribute to culinary craft and generous hospitality.</p>
+    </div>
+    <div class="about-stats reveal reveal-delay-3">
+      <div>
+        <div class="stat-num">346+</div>
+        <div class="stat-label">Reviews</div>
+      </div>
+      <div>
+        <div class="stat-num">4.1</div>
+        <div class="stat-label">Rating</div>
+      </div>
+      <div>
+        <div class="stat-num">#36</div>
+        <div class="stat-label">Palakkad Rank</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Menu -->
+<section id="menu">
+  <div class="section-label reveal">Culinary Offerings</div>
+  <h2 class="section-title reveal reveal-delay-1">Our Signature <em>Menu</em></h2>
+  <div class="menu-tabs reveal reveal-delay-2">
+    <button class="menu-tab active" data-tab="biryani">Biryani & Rice</button>
+    <button class="menu-tab" data-tab="arabic">Arabic Specials</button>
+    <button class="menu-tab" data-tab="northindian">North Indian</button>
+    <button class="menu-tab" data-tab="drinks">Drinks</button>
+  </div>
+
+  <!-- Biryani -->
+  <div class="menu-panel active" id="tab-biryani">
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Heaven Special Biryani <span class="item-tag">Chef's Pick</span></div>
+        <div class="item-desc">Slow-cooked Malabar-style dum biryani with aromatic whole spices</div>
+      </div>
+      <div class="item-price">₹199</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Chicken Dum Biryani</div>
+        <div class="item-desc">Tender chicken layered with fragrant basmati, saffron &amp; fried onions</div>
+      </div>
+      <div class="item-price">₹179</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Mutton Biryani</div>
+        <div class="item-desc">Juicy mutton pieces slow-cooked in a medley of whole spices</div>
+      </div>
+      <div class="item-price">₹229</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Egg Biryani</div>
+        <div class="item-desc">Classic biryani with masala eggs, raita &amp; side salad</div>
+      </div>
+      <div class="item-price">₹129</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Prawn Biryani</div>
+        <div class="item-desc">Coastal-style prawn biryani with coconut milk &amp; curry leaves</div>
+      </div>
+      <div class="item-price">₹249</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Veg Biryani</div>
+        <div class="item-desc">Garden fresh vegetables in aromatic dum biryani</div>
+      </div>
+      <div class="item-price">₹119</div>
+    </div>
+  </div>
+
+  <!-- Arabic -->
+  <div class="menu-panel" id="tab-arabic">
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Shawarma Wrap <span class="item-tag">Popular</span></div>
+        <div class="item-desc">Tender chicken shawarma with garlic sauce &amp; veggies in a warm wrap</div>
+      </div>
+      <div class="item-price">₹89</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Mandi Rice (Chicken)</div>
+        <div class="item-desc">Authentic Yemeni-style mandi with slow-cooked chicken &amp; fragrant rice</div>
+      </div>
+      <div class="item-price">₹249</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Chicken Kabsa</div>
+        <div class="item-desc">Saudi-style spiced rice with roasted chicken &amp; dried fruits</div>
+      </div>
+      <div class="item-price">₹269</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Hummus &amp; Pita</div>
+        <div class="item-desc">Creamy chickpea hummus with olive oil drizzle &amp; warm pita bread</div>
+      </div>
+      <div class="item-price">₹99</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Grilled Chicken Platter</div>
+        <div class="item-desc">Marinated charcoal-grilled chicken with Arabic rice &amp; dips</div>
+      </div>
+      <div class="item-price">₹299</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Falafel Wrap</div>
+        <div class="item-desc">Crispy falafel with tahini, pickles &amp; fresh salad in flatbread</div>
+      </div>
+      <div class="item-price">₹79</div>
+    </div>
+  </div>
+
+  <!-- North Indian -->
+  <div class="menu-panel" id="tab-northindian">
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Butter Chicken</div>
+        <div class="item-desc">Creamy tomato-based gravy with tender chicken tikka pieces</div>
+      </div>
+      <div class="item-price">₹169</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Paneer Butter Masala</div>
+        <div class="item-desc">Rich, velvety butter masala with fresh cottage cheese cubes</div>
+      </div>
+      <div class="item-price">₹149</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Chicken Tikka <span class="item-tag">Must Try</span></div>
+        <div class="item-desc">Tandoor-marinated chicken tikka with mint chutney &amp; onion rings</div>
+      </div>
+      <div class="item-price">₹189</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Dal Makhani</div>
+        <div class="item-desc">Slow-simmered black lentils in buttery tomato gravy</div>
+      </div>
+      <div class="item-price">₹119</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Garlic Naan</div>
+        <div class="item-desc">Soft, pillowy naan brushed with garlic butter &amp; coriander</div>
+      </div>
+      <div class="item-price">₹39</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Chicken Seekh Kebab</div>
+        <div class="item-desc">Minced chicken kebab grilled on skewers with spiced onion salad</div>
+      </div>
+      <div class="item-price">₹149</div>
+    </div>
+  </div>
+
+  <!-- Drinks -->
+  <div class="menu-panel" id="tab-drinks">
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Royal Falooda <span class="item-tag">Signature</span></div>
+        <div class="item-desc">Rose-milk falooda with basil seeds, vermicelli &amp; ice cream</div>
+      </div>
+      <div class="item-price">₹89</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">KitKat Shake</div>
+        <div class="item-desc">Creamy chocolate milk shake blended with KitKat &amp; whipped cream</div>
+      </div>
+      <div class="item-price">₹99</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Blue Lagoon</div>
+        <div class="item-desc">Refreshing blue lemonade with mint &amp; crushed ice</div>
+      </div>
+      <div class="item-price">₹79</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Mango Lassi</div>
+        <div class="item-desc">Thick Alphonso mango blended with chilled yoghurt</div>
+      </div>
+      <div class="item-price">₹69</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Fresh Lime Soda</div>
+        <div class="item-desc">Zesty fresh lime with soda — sweet, salted, or mixed</div>
+      </div>
+      <div class="item-price">₹45</div>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-name">Filter Coffee</div>
+        <div class="item-desc">South Indian decoction coffee served in a traditional dabarah</div>
+      </div>
+      <div class="item-price">₹39</div>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery -->
+<section id="gallery">
+  <div class="inner">
+    <div class="section-label reveal">Ambience &amp; Food</div>
+    <h2 class="section-title reveal reveal-delay-1">A Feast for the <em>Eyes</em></h2>
+    <div class="gallery-grid reveal reveal-delay-2">
+      <div class="gallery-cell">
+        <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?w=800&q=80" alt="Restaurant Interior" />
+      </div>
+      <div class="gallery-cell">
+        <img src="https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=500&q=80" alt="Biryani" />
+      </div>
+      <div class="gallery-cell">
+        <img src="https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=500&q=80" alt="Kebabs" />
+      </div>
+      <div class="gallery-cell">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80" alt="Dining Area" />
+      </div>
+      <div class="gallery-cell">
+        <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500&q=80" alt="Shake" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Info Band -->
+<div id="info">
+  <div class="info-card reveal">
+    <div class="info-icon-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </div>
+    <div class="info-title">Opening Hours</div>
+    <div class="info-body">
+      Mon – Sun<br />
+      11:00 AM – 11:00 PM<br />
+      <em style="font-size:0.9rem;color:rgba(201,168,76,0.5)">Open all days</em>
+    </div>
+  </div>
+  <div class="info-divider"></div>
+  <div class="info-card reveal reveal-delay-1">
+    <div class="info-icon-wrap">
+      <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    </div>
+    <div class="info-title">Location</div>
+    <div class="info-body">
+      Krishna Towers, Calicut By Pass<br />
+      Kalvakulam, Manali, Palakkad<br />
+      Kerala – 678001
+    </div>
+  </div>
+  <div class="info-divider"></div>
+  <div class="info-card reveal reveal-delay-2">
+    <div class="info-icon-wrap">
+      <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.27 6.27l1.37-1.37a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </div>
+    <div class="info-title">Reservations</div>
+    <div class="info-body">
+      <a href="tel:+919605014330">+91 96050 14330</a><br />
+      Dine-in · Takeaway<br />
+      Drive-Through · WiFi Available
+    </div>
+  </div>
+</div>
+
+<!-- Reviews -->
+<section id="reviews">
+  <div class="section-label reveal">What People Say</div>
+  <h2 class="section-title reveal reveal-delay-1">Guest <em>Experiences</em></h2>
+  <div class="reviews-grid">
+    <div class="review-card reveal">
+      <div class="review-quote">"</div>
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">Heaven Dine is a hidden gem! With delicious food and great staff, it's a must-visit. The food is exceptional and the service is top-notch. Don't miss out on this culinary delight in Palakkad.</p>
+      <div class="review-author">— Local Foodie</div>
+    </div>
+    <div class="review-card reveal reveal-delay-1">
+      <div class="review-quote">"</div>
+      <div class="review-stars">★★★★★</div>
+      <p class="review-text">What an incredible dining experience! The ambience was cozy and intimate, making it perfect for a night out. Five stars isn't enough — this place deserves so much more!</p>
+      <div class="review-author">— Google Review</div>
+    </div>
+    <div class="review-card reveal reveal-delay-2">
+      <div class="review-quote">"</div>
+      <div class="review-stars">★★★★☆</div>
+      <p class="review-text">Word-of-mouth has helped this place gain popularity and it's bustling during lunch hours. The biryani is absolutely divine — been coming here every week for months.</p>
+      <div class="review-author">— Regular Patron</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="section-label reveal" style="justify-content:center;color:var(--gold-lt);">Visit Us Today</div>
+  <h2 class="section-title reveal reveal-delay-1" style="color:var(--cream);">Ready for a <em>Heavenly</em> Meal?</h2>
+  <p class="cta-sub reveal reveal-delay-2">Call us, walk in, or order online — heaven is closer than you think.</p>
+  <div class="cta-actions reveal reveal-delay-3">
+    <button class="btn-primary" onclick="window.open('https://wa.me/919605014330','_blank')">
+      <span>WhatsApp Us</span>
+    </button>
+    <button class="btn-gold-outline" onclick="document.getElementById('location').scrollIntoView({behavior:'smooth'})">Find Us on Map</button>
+  </div>
+</section>
+
+<!-- Location -->
+<div id="location">
+  <div class="location-inner">
+    <div class="location-info">
+      <div class="section-label reveal">Find Us</div>
+      <h2 class="section-title reveal reveal-delay-1">Come <em>Visit Us</em></h2>
+
+      <div class="location-detail reveal reveal-delay-2">
+        <div class="location-detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="location-detail-text">
+          <strong>Address</strong>
+          Krishna Towers, Calicut By Pass, 20/161/13,<br />Palakkad - Kozhikode Hwy, Kalvakulam,<br />Manali, Palakkad, Kerala – 678001
+        </div>
+      </div>
+
+      <div class="location-detail reveal reveal-delay-2">
+        <div class="location-detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.27 6.27l1.37-1.37a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div class="location-detail-text">
+          <strong>Phone</strong>
+          <a href="tel:+919605014330" style="color:var(--muted);text-decoration:none;">+91 96050 14330</a>
+        </div>
+      </div>
+
+      <div class="location-detail reveal reveal-delay-3">
+        <div class="location-detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="location-detail-text">
+          <strong>Hours</strong>
+          Monday – Sunday: 11:00 AM – 11:00 PM
+        </div>
+      </div>
+
+      <div class="location-detail reveal reveal-delay-3">
+        <div class="location-detail-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div class="location-detail-text">
+          <strong>Facilities</strong>
+          Drive-Through · Parking · WiFi · Kids Menu · Takeaway
+        </div>
+      </div>
+
+      <div class="location-cta reveal reveal-delay-3">
+        <a href="https://maps.app.goo.gl/E5fqp8CgGogEyJKp8" target="_blank" rel="noopener" class="location-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+          Get Directions
+        </a>
+      </div>
+    </div>
+    <div class="map-embed">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3925.8!2d76.66211!3d10.77766!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba86d306af5b55f%3A0x8571efc98ccaec21!2sHeaven%20Dine!5e0!3m2!1sen!2sin!4v1708170000000!5m2!1sen!2sin"
+        allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="Heaven Dine - Krishna Towers, Kalvakulam, Palakkad">
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-brand">
+    <a href="#" class="nav-logo">Heaven <span>Dine</span></a>
+    <p class="footer-tagline">Where every meal is a moment of pure bliss. North Indian &amp; Arabic cuisine served with heart in Palakkad, Kerala.</p>
+  </div>
+  <div>
+    <div class="footer-col-title">Navigate</div>
+    <ul class="footer-links">
+      <li><a href="#about">About Us</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Services</div>
+    <ul class="footer-links">
+      <li><a href="#">Dine-In</a></li>
+      <li><a href="#">Takeaway</a></li>
+      <li><a href="#">Drive-Through</a></li>
+      <li><a href="#">Online Order</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="footer-col-title">Contact</div>
+    <ul class="footer-links">
+      <li><a href="tel:+919605014330">+91 96050 14330</a></li>
+      <li><a href="https://wa.me/919605014330">WhatsApp</a></li>
+      <li><a href="https://www.instagram.com/heavendine.rest_official/">Instagram</a></li>
+      <li><a href="#location">Directions</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2025 Heaven Dine, Palakkad. All rights reserved.</p>
+  <div class="social-links">
+    <a href="https://www.instagram.com/heavendine.rest_official/" class="social-link" target="_blank" rel="noopener">ig</a>
+    <a href="https://wa.me/919605014330" class="social-link" target="_blank" rel="noopener">wa</a>
+    <a href="https://maps.app.goo.gl/E5fqp8CgGogEyJKp8" class="social-link" target="_blank" rel="noopener">gm</a>
+  </div>
+</div>
+
+<script>
+  /* ── LOADER ── */
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+    }, 2000);
+  });
+
+  /* ── IMAGE FALLBACK ── */
+  document.querySelectorAll('.mosaic-img img, .gallery-cell img, .about-img-main img, .about-img-accent img').forEach(img => {
+    img.addEventListener('error', function() {
+      const fallbacks = [
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=400&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=400&fit=crop&q=80',
+        'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=400&h=400&fit=crop&q=80',
+      ];
+      const idx = Math.floor(Math.random() * fallbacks.length);
+      if (this.src !== fallbacks[idx]) { this.src = fallbacks[idx]; }
+    });
+  });
+
+  /* ── CUSTOM CURSOR ── */
+  const cursor     = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+  });
+
+  (function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    cursorRing.style.left = rx + 'px';
+    cursorRing.style.top  = ry + 'px';
+    requestAnimationFrame(animateRing);
+  })();
+
+  document.querySelectorAll('a,button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width  = '20px';
+      cursor.style.height = '20px';
+      cursorRing.style.width  = '60px';
+      cursorRing.style.height = '60px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width  = '10px';
+      cursor.style.height = '10px';
+      cursorRing.style.width  = '36px';
+      cursorRing.style.height = '36px';
+    });
+  });
+
+  /* ── NAV SCROLL ── */
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  /* ── REVEAL ON SCROLL ── */
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => io.observe(el));
+
+  /* ── MENU TABS ── */
+  document.querySelectorAll('.menu-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
